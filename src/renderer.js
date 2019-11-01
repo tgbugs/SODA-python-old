@@ -7,7 +7,7 @@ const path = require('path')
 const {ipcRenderer} = require('electron')
 
 // Connect to python server and check
-let client = new zerorpc.Client()
+let client = new zerorpc.Client({ timeout: 300000})
 
 client.connect("tcp://127.0.0.1:4242")
 
@@ -478,7 +478,7 @@ curateDatasetBtn.addEventListener('click', () => {
     }
   })
 
-  var timerProgress = setInterval(progressfunction, 250)
+  var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){
   document.getElementById("para-curate-progress-bar-status").innerHTML = "Generating files and folders ...."
     client.invoke("api_curate_dataset_progress", (error, res) => {

@@ -18,6 +18,7 @@ import collections
 import subprocess
 import shutil
 import re
+import gevent
 
 ### Global variables
 curateprogress = ' '
@@ -120,7 +121,7 @@ def preview_file_organization(jsonpath):
     try:
         makedirs(preview_path)
     except:
-        raise Exception("Error: Preview folder already present, click on 'Delete Preview Folder' option to get rid of the older vesion")
+        raise Exception("Error: Preview folder already present, click on 'Delete Preview Folder' option to get rid of the existing folder")
 
     try:
         folderrequired = []
@@ -173,6 +174,7 @@ def preview_folder_structure(paths, folder_path):
     Action:
         Creates folders and empty files at the given 'folder_path'
     """
+    gevent.sleep(0)
     for p in paths:
         if isfile(p):
             file = basename(p)
@@ -412,9 +414,9 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
-
-            t = threading.Thread(target=create_dataset(jsonpath, pathdataset))
-            t.start()
+            create_dataset(jsonpath, pathdataset)
+            #t = threading.Thread(target=create_dataset(jsonpath, pathdataset))
+            #t.start()
 
             curateprogress = curateprogress + ', ,' + 'New dataset created'
 
@@ -598,11 +600,13 @@ def copytree(src, dst, symlinks=False, ignore=None):
         Creates folders in the original folder structure
     """
     global curated_size
+    # gevent.sleep(0)
     if not exists(dst):
-        makedirs(dst)
+        makedirs(dst)   
     for item in listdir(src):
         s = join(src, item)
-        d = join(dst, item)
+        d = join(dst, item) 
+        gevent.sleep(0)
         if isdir(s):
             copytree(s, d, symlinks, ignore)
         else:
